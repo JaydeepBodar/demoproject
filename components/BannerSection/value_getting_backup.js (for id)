@@ -1,0 +1,74 @@
+import { gql, useQuery } from '@apollo/client';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+
+// GraphQL query to fetch page ID
+const GET_PAGE_ID = gql query GetPageId($pageId: Int!) { pages(where: { id: $pageId }) { nodes { id title editorBlocks { __typename ... on AcfBannerSection { bannerSection { bannerHeading bannerHeadingTag leftBannerContent rightBannerContent bannerLink { links { target title url } } bannerImage { node { altText mediaItemUrl } } } } } } } };
+
+// Custom hook to fetch page ID dynamically
+function usePageId() {
+const router = useRouter();
+
+// Execute GraphQL query to fetch page ID
+const { data, loading, error } = useQuery(GET_PAGE_ID, {
+variables: { pageId: 10 }, // Start with a static ID for testing
+});
+
+return {
+pageId: data?.pages?.nodes?.[0]?.id,
+loading,
+error,
+};
+}
+
+// BannerSection component using dynamically fetched page ID
+const BannerSection = () => {
+const { pageId, loading: pageIdLoading, error: pageIdError } = usePageId();
+
+// Execute GraphQL query to fetch banner data based on page ID
+const { error: bannerError, data: bannerData } = useQuery(GET_PAGE_ID, {
+variables: { pageId },
+skip: !pageId, // Skip query if pageId is null or undefined
+});
+
+// Handle loading and error states
+if (pageIdLoading) return <p>Loading page ID...</p>;
+if (pageIdError) return <p>Error fetching page ID: {pageIdError.message}</p>;
+if (bannerError) return <p>Error fetching banner data: {bannerError.message}</p>;
+
+// Extract banner section data from GraphQL response
+const sectionData = bannerData?.pages?.nodes?.[0]?.editorBlocks?.find(
+(block) => block.__typename === 'AcfBannerSection'
+)?.bannerSection;
+
+// Render banner section using retrieved data
+return (
+<article className="banner-section">
+{/* Render your banner section content here */}
+</article>
+);
+};
+
+export default BannerSection;
+
+// usePageId.js
+
+import { useRouter } from 'next/router';
+import { gql, useQuery } from '@apollo/client';
+
+const GET_PAGE_ID = gql query GetPageId($uri: String!) { pageBy(uri: $uri) { id } };
+
+function usePageId() {
+const router = useRouter();
+const { data, loading, error } = useQuery(GET_PAGE_ID, {
+variables: { uri: router.asPath.replace('/', '') },
+});
+
+return {
+pageId: data?.pageBy?.id,
+loading,
+error,
+};
+}
+
+export default usePageId;

@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .scale-x-0 {
+      transform: scale(0, 1);
+    }
+    .scale-y-0 {
+        transform: scale(1, 0);
+    }      
+    .scale-1001 {
+        transform: scale(1.001);
+    }
+  }
+
+h1, h2, h3, h4, h5, h6, ul li, ul ol, p ,
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, ul li a, ul ol a, p a, 
+h1 strong, h2 strong, h3 strong, h4 strong, h5 strong, h6 strong, ul li strong, ul ol strong, p strong{   
+    line-height: inherit;
+}
