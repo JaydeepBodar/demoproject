@@ -12,7 +12,7 @@ export function getStaticProps(ctx) {
 export async function getStaticPaths() {
   try {
     // Fetch all pages from WordPress backend
-    const { data } = await fetch('http://192.168.1.106/wppro/graphql', {
+    const { data } = await fetch('https://devlr.websiteserverhost.biz/wpproheadless/wppro/graphql', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
